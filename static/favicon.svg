@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 115.47" role="img" aria-label="awakenedhaki.dev">
+  <!--
+    Site mark: an R-package hex sticker, drawn by the studio's icon rule —
+    page background, ink drawing, muted second stroke. Same drawing as
+    src/lib/components/HexLogo.svelte.
+
+    Geometry is the real thing, not an approximation. The R `hexSticker`
+    canonical sticker is 43.9mm x 50.8mm, a ratio of 1.157 — which is 2/sqrt(3),
+    the height-to-width ratio of a POINTY-TOP regular hexagon. Circumradius 57.735
+    makes the width exactly 100 units, so the viewBox is 0 0 100 115.47.
+
+    Colours are literal, not CSS variables: a favicon is drawn by the browser
+    chrome, where the site's stylesheet does not reach. It uses the light
+    values only; the page-coloured plate keeps it legible on a dark tab bar.
+    Page #F9F6EE, ink #24221E and muted #676258 are the light tokens in
+    src/app.css; change them together.
+
+    Only five shapes besides the plate: at a 16px tab favicon anything finer
+    turns to mush, so the mark has to survive being 16 pixels wide.
+  -->
+  <polygon points="50,4 96.5,30.85 96.5,84.62 50,111.47 3.5,84.62 3.5,30.85"
+           fill="#F9F6EE" stroke="#24221E" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M20 78 L44 60 L60 68 L80 38" fill="none" stroke="#676258" stroke-width="6"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="20" cy="78" r="7" fill="#24221E"/>
+  <circle cx="44" cy="60" r="7" fill="#24221E"/>
+  <circle cx="60" cy="68" r="7" fill="#24221E"/>
+  <circle cx="80" cy="38" r="7" fill="#24221E"/>
+</svg>

@@ -1,0 +1,40 @@
+{
+  "name": "research-blog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A data-science education blog built with SvelteKit, mdsvex and Shiki.",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prebuild": "node scripts/check-drafts.mjs && node scripts/check-figures.mjs && node scripts/build-search-index.mjs && node scripts/build-seo.mjs",
+    "new": "node scripts/new-post.mjs",
+    "status": "node scripts/status.mjs",
+    "sync": "node scripts/sync-content.mjs",
+    "sync:drafts": "node scripts/sync-content.mjs --drafts",
+    "sync:archive": "BLOG_CONTENT_DIR=archive node scripts/sync-content.mjs",
+    "predev": "node scripts/build-search-index.mjs",
+    "test": "npm run sync:archive && npm run build && vitest run && playwright test",
+    "test:unit": "vitest run",
+    "test:screens": "playwright test",
+    "preview:pages": "node scripts/serve-pages.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.65.0",
+    "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "github-slugger": "^2.0.0",
+    "katex": "^0.18.7",
+    "mdsvex": "^0.12.7",
+    "rehype-katex": "^5.0.0",
+    "rehype-slug": "^6.0.0",
+    "remark-math": "^3.0.1",
+    "shiki": "^4.2.0",
+    "svelte": "^5.56.3",
+    "vite": "^7.3.5",
+    "vitest": "^5.1.1"
+  }
+}

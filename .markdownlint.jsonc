@@ -1,0 +1,36 @@
+{
+  // markdownlint config for mdsvex posts.
+  //
+  // These files are not plain Markdown: mdsvex compiles them as Svelte
+  // components, so a post legitimately contains a <script> block and component
+  // tags. Several default rules assume plain CommonMark and fire constantly on
+  // correct files, which trains you to ignore the linter — the worst outcome,
+  // since the rules that DO matter then get ignored too.
+
+  "default": true,
+
+  // MD033 (no-inline-html) is the one you were seeing. Rather than switching
+  // it off, the components are allowlisted: stray raw HTML is still flagged,
+  // which is worth keeping, while <Figure>, <CodeTabs>, <Callout>, <CodeFold>
+  // and the frontmatter <script> block are recognised as valid.
+  //
+  // Add new components here as you build them. If this list goes stale the
+  // symptom is a false positive, not a broken build.
+  "MD033": {
+    "allowed_elements": ["script", "Figure", "CodeTabs", "Callout", "CodeFold"]
+  },
+
+  // MD041: "first line should be a top-level heading". Posts start with YAML
+  // frontmatter and a <script> block, and the H1 is rendered by the layout
+  // from the `title` field — a literal H1 in the body would duplicate it.
+  "MD041": false,
+
+  // MD013: line-length. Prose is wrapped by the editor, and code fences inside
+  // posts legitimately exceed any column limit.
+  "MD013": false,
+
+  // MD024: duplicate headings. A series of posts often reuses section names
+  // ("Loading the data") across parts, and rehype-slug already de-duplicates
+  // the anchor ids, so collisions are handled rather than merely tolerated.
+  "MD024": { "siblings_only": true }
+}

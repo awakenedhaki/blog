@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!-- Set by the bootstrap below to the page colour, so a phone's browser bar
+		     follows the site's theme. These two values are the --page tokens in
+		     app.css, repeated because this runs before the stylesheet loads. -->
+		<meta name="theme-color" content="#F9F6EE" />
+		<!--
+			Theme bootstrap. This runs BEFORE first paint, so a dark-mode reader never
+			sees a white flash. The `theme` key holds 'system', 'light' or 'dark';
+			anything else (including nothing) means System, which follows the
+			operating system's prefers-color-scheme. Today's site stored only 'light'
+			and 'dark', and those still read as they did. lib/theme.svelte.js takes
+			over once the page is running.
+			It must stay inline; moving it into the bundle would let the page paint first.
+		-->
+		<script>
+			(function () {
+				var choice = 'system';
+				try {
+					choice = localStorage.getItem('theme') || 'system';
+				} catch (e) {
+					/* localStorage can be blocked (private mode); follow the system */
+				}
+				var dark =
+					choice === 'dark' ||
+					(choice !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+				document.documentElement.classList.toggle('dark', dark);
+				document
+					.querySelector('meta[name="theme-color"]')
+					.setAttribute('content', dark ? '#0F111A' : '#F9F6EE');
+			})();
+		</script>
+		%sveltekit.head%
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents">%sveltekit.body%</div>
+	</body>
+</html>

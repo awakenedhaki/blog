@@ -1,0 +1,15 @@
+{
+  // Treat .md files in this project as Svelte-flavoured Markdown so the editor
+  // stops offering plain-Markdown assumptions that do not apply here.
+  "files.associations": {
+    "*.md": "markdown"
+  },
+  // markdownlint reads .markdownlint.jsonc at the project root; this just makes
+  // sure the extension is not also applying a user-level config on top.
+  "markdownlint.configFile": ".markdownlint.jsonc",
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    // Trailing-whitespace trimming would eat Markdown's two-space line breaks.
+    "files.trimTrailingWhitespace": false
+  }
+}

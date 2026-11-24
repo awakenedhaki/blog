@@ -1,0 +1,604 @@
+/* ==========================================================================
+   Global stylesheet
+   --------------------------------------------------------------------------
+   The awakenedhaki studio look: ink on paper in light mode, Material Ocean
+   in dark mode, flat and quiet. One system font family throughout. Every
+   colour is a token in the two blocks below (light in :root, dark in
+   html.dark); components never branch on the mode.
+   ========================================================================== */
+
+/* ==========================================================================
+   Design tokens — ported from the FixIt Hugo theme
+   --------------------------------------------------------------------------
+   These values are FixIt's own defaults, taken from the theme's appearance
+   variable table (layouts/_partials/function/scss-vars.html), not eyeballed
+   from a screenshot. Where a name below differs from FixIt's, the FixIt key
+   is given in the comment so the two can be diffed later.
+   ========================================================================== */
+
+:root {
+	color-scheme: light;
+
+	/* ---- typography ------------------------------------------------------
+	   FixIt sets ONE family for body and headings alike (its
+	   header_title_font_family is derived from global_font_family), which is
+	   why the site reads as it does: there is no serif/sans contrast, only a
+	   weight and size contrast. Reproducing that means dropping IBM Plex
+	   Serif from headings, not just swapping the body face.
+
+	   This stack is the native UI font of whatever machine is reading: San
+	   Francisco on Apple, Segoe UI on Windows, Roboto on Android. Two
+	   consequences worth knowing. Upside: nothing is downloaded, so there is
+	   no font request, no FOUT, and four @fontsource packages leave the
+	   dependency list. Downside: the blog will not look byte-identical across
+	   operating systems — that is inherent to a system stack and is the
+	   trade FixIt already makes. */
+	--font-body:
+		system-ui, -apple-system, BlinkMacSystemFont, 'PingFang SC',
+		'Microsoft YaHei UI', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+		'Fira Sans', 'Droid Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	--font-display: var(--font-body);  /* FixIt: header_title_font_family */
+
+	/* FixIt: code_font_family. Source Code Pro is named first but not shipped
+	   by the theme, so in practice most readers land on Menlo or Consolas —
+	   which is exactly what your current site renders. Listed verbatim. */
+	--font-mono: 'Source Code Pro', Menlo, Consolas, Monaco, monospace;
+
+	--font-size: 1rem;          /* FixIt: global_font_size  = 16px */
+	--line-height: 1.5;         /* FixIt: global_line_height = 1.5rem/16px */
+
+	/* ---- type scale (studio) ---------------------------------------------
+	   The studio's sizes, written in rem against the 16px root so they
+	   follow the reader's font-size setting. Weights sit with the rules that
+	   use them: display, headlines and titles bold; body regular; labels
+	   semibold. Nothing goes under 12px (0.75rem); a test enforces it. */
+	--type-display: 2.75rem;      /* 44px  site name on the home page */
+	--type-headline-l: 2rem;      /* 32px  page and article titles (proposed; not in the studio set) */
+	--type-headline: 1.5rem;      /* 24px  prose h2, section titles */
+	--type-title-l: 1.25rem;      /* 20px  prose h3, card titles (proposed) */
+	--type-title: 1rem;           /* 16px  "Contents", menu and panel titles */
+	--type-body-l: 1rem;          /* 16px  body text, ledes */
+	--type-body: 0.875rem;        /* 14px  blurbs, captions, contents entries */
+	--type-label-l: 0.875rem;     /* 14px  buttons, tabs, menu options, chips */
+	--type-label: 0.75rem;        /* 12px  callout kind, code language chip */
+	--type-meta: 0.8125rem;       /* 13px  mono `#` meta rows and tag lists (the blog's own) */
+
+	--tracking-display: -0.5px;
+	--tracking-label-l: 0.25px;
+	--tracking-label: 0.5px;      /* with text-transform: uppercase */
+
+	/* ---- shape ------------------------------------------------------------ */
+	--radius-tile: 6px;           /* inline code, small tiles */
+	--radius-card: 12px;          /* code blocks, callouts, cards, menus, panels */
+	--radius-pill: 999px;         /* buttons, chips, the search field, selectors */
+
+	/* ---- spacing: the 4px grid, for component padding and gaps. Prose keeps
+	   its own rhythm in em, since that follows the text size. */
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-5: 1.25rem;
+	--space-6: 1.5rem;
+	--space-7: 1.75rem;
+	--space-8: 2rem;
+	--space-9: 2.25rem;
+	--space-10: 2.5rem;
+	--space-11: 2.75rem;
+	--space-12: 3rem;
+	--space-13: 3.25rem;
+	--space-14: 3.5rem;
+
+	/* ---- colour: light -------------------------------------------------
+	   The studio's core tokens: ink on paper. Every pair is checked by
+	   tests/unit/contrast.test.js (text 4.5:1, hairlines and accent 3:1).
+	   --page and --muted are the design guide's; the tile is a near-white
+	   card on the paper, so code, contents and callouts read as distinct
+	   surfaces. */
+	--page: #F9F6EE;            /* the paper */
+	--tile: #FFFEFB;            /* cards, panels, code, contents */
+	--tappable: #EDE9DD;        /* pressable fills, hover, table heads, inline code */
+	--ink: #24221E;
+	--muted: #676258;
+	--outline: #8C8678;         /* the border of anything pressable (3:1) */
+	--divider: #E0DBCE;         /* hairlines and rules */
+	--accent: var(--ink);       /* light mode is monochrome */
+	--on-accent: #F9F6EE;
+	--highlight: #B07800;       /* amber: reserved for records, unused here */
+	--error: #B3261E;
+
+	/* The blog's own roles, each pointing at a core token. */
+	--selection: color-mix(in srgb, var(--accent) 22%, transparent);
+
+	/* Dims the page behind the open search field. */
+	--scrim: color-mix(in srgb, var(--ink) 32%, transparent);
+
+	/* ---- figure data colours (WP6) -------------------------------------
+	   lib/figures.js maps each viridis sample in the exported figures onto
+	   these, so data reads in both modes (viridis falls to 1.2:1 on one tile
+	   or the other). Every value is at least 3:1 on the tile, which
+	   contrast.test.js enforces. Proposed values, awaiting the owner's look.
+
+	   Categorical: the studio chart palette, light values darkened to clear
+	   3:1 even on --tappable. */
+	--cat-1: #2A78D6;
+	--cat-2: #E75217;
+	--cat-3: #179468;
+	--cat-4: #B27900;
+	--cat-5: #E04D85;
+	--cat-6: #008300;
+	/* Ordered: one blue hue (OKLCH h 258), faint to strong. Mid-tone to full
+	   strength rather than from near-white, so every step clears 3:1. */
+	--seq-1: #3E7AD3;
+	--seq-2: #2D6AC1;
+	--seq-3: #1F59AC;
+	--seq-4: #174A92;
+	--seq-5: #123B75;
+
+	/* ---- width -----------------------------------------------------------
+	   Centred and capped, as in the studio's apps. --wrap-max is the CONTENT
+	   width; the side padding sits outside it. With the contents rail beside
+	   an article (from 1100px) its column is 72 - 16 - 3 = 53rem, and
+	   everything in it keeps to the 48rem measure (see .prose below). */
+	--wrap-max: 72rem;          /* 1152px */
+	--wrap-pad: 16px;           /* 24px from 600px wide, see .wrap */
+	--rail: 16rem;              /* contents column */
+	--gutter: 3rem;
+
+	/* The reading measure: about 80 characters of body text. Code, tables,
+	   figures and callouts share it, so a post has one pair of edges. */
+	--measure: 48rem;
+}
+
+html.dark {
+	color-scheme: dark;
+
+	/* ---- colour: dark --------------------------------------------------
+	   Material Ocean, as in the studio's apps and the code blocks: its
+	   editor background as the page, its inset surface (#1A1C25) as the
+	   tile, its foreground as ink, its secondary grey as muted, its
+	   selection blue for outlines, and cyan for the one current thing. */
+	--page: #0F111A;
+	--tile: #1A1C25;
+	--tappable: #232634;
+	--ink: #BABED8;
+	--muted: #8F93A2;
+	--outline: #717CB4;
+	--divider: #2B2E3B;
+	--accent: #84FFFF;
+	--on-accent: #0F111A;
+	--highlight: #FFCB6B;
+	--error: #F07178;
+
+	--scrim: rgb(0 0 0 / 0.55);
+
+	--cat-1: #5D8FF5;
+	--cat-2: #E36E48;
+	--cat-3: #B070DC;
+	--cat-4: #6BA12C;
+	--cat-5: #00A3C4;
+	--cat-6: #BC8700;
+	/* faint to strong is dark to light on the dark tile */
+	--seq-1: #4C80CD;
+	--seq-2: #6196E4;
+	--seq-3: #7DACF3;
+	--seq-4: #9BC3FE;
+	--seq-5: #BBDAFF;
+}
+
+/* ---- base ------------------------------------------------------------------ */
+* {
+	box-sizing: border-box;
+}
+
+/* No horizontal scroll on any device. `clip` (not `hidden`) is deliberate:
+   `overflow-x: hidden` turns the element into a scroll container, which
+   silently breaks the sticky header; `clip` just truncates. */
+html,
+body {
+	overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		scroll-behavior: smooth;
+	}
+}
+
+body {
+	margin: 0;
+	background: var(--page);
+	color: var(--ink);
+	font-family: var(--font-body);
+	font-size: var(--font-size);
+	font-weight: 400;                /* FixIt: global_font_weight */
+	line-height: var(--line-height);
+	-webkit-font-smoothing: antialiased;
+}
+
+::selection {
+	background: var(--selection);     /* FixIt: selection_color */
+}
+
+/* Headings share the body family; hierarchy comes from weight and size only,
+   which is what gives FixIt its flat, utilitarian look. */
+h1, h2, h3, h4 {
+	font-family: var(--font-display);
+	font-weight: 700;
+	line-height: 1.25;
+	color: var(--ink);
+}
+
+h1 {
+	font-size: var(--type-headline-l);
+}
+
+/* Chrome links (nav, footer, listings) are near-black and underline on hover.
+   In-article links are blue — see the .prose rules below. */
+a {
+	color: var(--ink);
+	text-underline-offset: 0.2em;
+	text-decoration-thickness: 1px;
+}
+/* Hover never changes a link's colour: an underlined link thickens its
+   underline, and a chrome link with none at rest gains one. Components set
+   `text-decoration-line` (not the shorthand) so this thickness survives.
+   Pressables take the --tappable fill instead. */
+a:hover {
+	text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+/* Mono "code comment" rows used for dates, tags and eyebrows. The leading
+   `#` is wrapped in aria-hidden so a screen reader doesn't say "number". */
+.meta {
+	font-family: var(--font-mono);
+	font-size: var(--type-meta);
+	font-variant-numeric: tabular-nums;
+	color: var(--muted);
+}
+
+/* ---- page width ------------------------------------------------------------
+   One centred container, capped at --wrap-max of content, with 16px side
+   padding on phones and 24px from 600px wide.
+   ---------------------------------------------------------------------------- */
+.wrap {
+	width: 100%;
+	max-width: calc(var(--wrap-max) + 2 * var(--wrap-pad));
+	margin-inline: auto;
+	padding-inline: var(--wrap-pad);
+}
+
+@media (min-width: 600px) {
+	:root {
+		--wrap-pad: 24px;
+	}
+}
+
+/* There is deliberately NO wider variant for article pages.
+
+   Previously articles used their own container so the TOC rail could sit
+   beside the content without narrowing it. The cost was that an article's
+   left edge did not line up with the site name in the navbar — two different
+   left margins on the same site, which reads as a bug even when it is not.
+
+   One container wins. The header defines the site's edges and every page,
+   article or listing, aligns to them; the TOC rail is carved OUT of that
+   width rather than added beside it. The trade is a narrower text column on
+   article pages (the rail and its gutter come off the total), which is the
+   correct trade: alignment is a structural promise the reader notices
+   immediately, while a few dozen pixels of measure is not. */
+
+/* ==========================================================================
+   Code blocks (Shiki dual-theme output)
+   --------------------------------------------------------------------------
+   Shiki emits BOTH palettes on every token as CSS custom properties
+   (--shiki-light / --shiki-dark). These rules choose which one is visible,
+   so flipping the theme recolours code instantly with zero re-rendering.
+   ========================================================================== */
+.code-block {
+	position: relative;
+	margin: 2.2rem 0;   /* was 1.75rem — code needs air above and below */
+}
+
+.code-block pre.shiki {
+	margin: 0;
+	padding: var(--space-4);
+	border: 1px solid var(--divider);
+	border-radius: var(--radius-card);
+	overflow-x: auto;
+	font-family: var(--font-mono);
+	font-size: var(--type-body);
+	line-height: 1.6;
+	tab-size: 2;
+	/* The studio tile in both modes, overriding the background Shiki bakes
+	   into its themes. Token colours still come from Shiki (with the
+	   overrides in mdsvex.config.js); only the canvas is the site's. */
+	background: var(--tile) !important;
+}
+
+/* the language chip in the top-right corner, read from data-language */
+.code-block::after {
+	content: attr(data-language);
+	position: absolute;
+	top: 0.45rem;
+	right: 0.7rem;
+	font-family: var(--font-mono);
+	font-size: var(--type-label);
+	font-weight: 600;
+	letter-spacing: var(--tracking-label);
+	text-transform: uppercase;
+	color: var(--muted);
+	pointer-events: none;
+}
+/* With the copy button showing, the chip moves left to make room for it. */
+.code-block:has(> .copy:not([hidden]))::after {
+	right: calc(var(--space-1) + 40px + var(--space-2));
+	top: 0.7rem;
+}
+
+/* ---- copy button (lib/copy-code.js) ----------------------------------------
+   An icon button in the block's top-right corner, on the tile colour so it
+   masks any code beneath it. With a mouse it appears on hover or keyboard
+   focus, as on GitHub, so it is not parked over every block's first line;
+   on touch screens it is always shown. A tick replaces the icon for a
+   moment after copying (the status line announces it). */
+.code-block > .copy {
+	position: absolute;
+	top: var(--space-1);
+	right: var(--space-1);
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background: var(--tile);
+	color: var(--muted);
+	cursor: pointer;
+	transition: opacity 150ms ease-out, background-color 120ms ease, color 120ms ease;
+}
+.code-block > .copy[hidden] {
+	display: none;
+}
+.code-block > .copy:hover {
+	background: var(--tappable);
+	color: var(--ink);
+}
+.code-block > .copy svg {
+	width: 20px;
+	height: 20px;
+}
+.code-block > .copy .icon-done,
+.code-block > .copy[data-copied] .icon-copy {
+	display: none;
+}
+.code-block > .copy[data-copied] .icon-done {
+	display: block;
+}
+@media (hover: hover) {
+	.code-block > .copy {
+		opacity: 0;
+	}
+	.code-block:hover > .copy,
+	.code-block > .copy:focus-visible,
+	.code-block > .copy[data-copied] {
+		opacity: 1;
+	}
+	/* The chip only needs to make room while the button shows. */
+	.code-block:not(:hover):not(:focus-within)::after {
+		right: 0.7rem;
+		top: 0.45rem;
+	}
+}
+
+/* ---- line numbers ------------------------------------------------------------
+   A CSS counter on Shiki's .line spans, so they are generated content: never
+   selected, never copied, and (with the empty alt text after the slash)
+   skipped by screen readers. Browsers without alt-text support use the
+   first declaration. The gutter fits the largest number (--line-digits is
+   set per block by mdsvex.config.js). */
+.code-block pre.shiki code {
+	counter-reset: line;
+}
+.code-block pre.shiki .line::before {
+	counter-increment: line;
+	content: counter(line);
+	content: counter(line) / '';
+	display: inline-block;
+	width: calc(var(--line-digits, 2) * 1ch);
+	margin-right: var(--space-4);
+	text-align: right;
+	color: var(--muted);
+	font-style: normal;
+	user-select: none;
+}
+
+/* light palette (default). Shiki emits a font style only where a theme
+   sets one (comments are italic), hence the fallback. */
+.shiki,
+.shiki span {
+	color: var(--shiki-light);
+	font-style: var(--shiki-light-font-style, normal);
+}
+/* dark palette when <html class="dark"> */
+html.dark .shiki,
+html.dark .shiki span {
+	color: var(--shiki-dark);
+	font-style: var(--shiki-dark-font-style, normal);
+}
+/* Individual tokens keep a transparent background so the FixIt code surface
+   above shows through; only highlighted LINES paint their own. */
+.shiki span {
+	background-color: transparent;
+}
+
+/* Long unbroken strings (function names, URLs) wrap rather than overflow. */
+.prose {
+	overflow-wrap: break-word;
+}
+
+/* Anchored headings land below the sticky header, not underneath it. */
+.prose :is(h2, h3) {
+	scroll-margin-top: 5rem;
+}
+
+/* inline code in prose */
+.prose :not(pre) > code {
+	font-family: var(--font-mono);
+	font-size: 0.875em;
+	color: var(--ink);
+	background: var(--tappable);
+	border-radius: var(--radius-tile);
+	padding: 0.1em 0.35em;
+}
+
+/* ==========================================================================
+   Long-form article styles (applied by the post layout)
+   --------------------------------------------------------------------------
+   One column: running text, code, tables, figures, callouts and folds all
+   keep to the --measure, so every block in a post shares both edges (the
+   owner's choice over a wider column for code). Anything wider than the
+   measure scrolls inside its own box.
+   ========================================================================== */
+.prose {
+	max-width: 100%;
+	/* Deviation from FixIt, flagged: its global line-height is 1.5, which is
+	   correct for UI chrome but tight for long technical prose — and tight
+	   leading was part of the claustrophobia you flagged. Article body only;
+	   the rest of the site stays at FixIt's 1.5. Set to inherit for parity. */
+	line-height: 1.7;
+}
+
+/* In-article links are ink and underlined, in both modes: the underline
+   says "link", so no colour is needed. It is drawn in --outline and turns
+   ink (and thicker) on hover. */
+.prose a {
+	color: var(--ink);
+	text-decoration: underline;
+	text-decoration-color: var(--outline);
+}
+.prose a:hover {
+	text-decoration-color: currentColor;
+}
+
+/* Every direct child keeps to the measure: text and blocks alike. */
+.prose > * {
+	max-width: var(--measure);
+}
+
+/* Paragraphs keep the measure wherever they sit, including inside a list
+   item or other wrapper. */
+.prose p {
+	max-width: var(--measure);
+}
+
+.prose p {
+	margin: 0 0 1.35em;
+}
+
+.prose :is(ul, ol) {
+	padding-left: 1.4rem;
+}
+.prose li + li {
+	margin-top: 0.4rem;
+}
+
+/* Generous space ABOVE a heading, tighter below: the gap should separate a
+   heading from the PREVIOUS section, not from its own first paragraph. */
+.prose h2 {
+	margin-top: 2.8rem;
+	margin-bottom: 0.9rem;
+	font-size: var(--type-headline);
+	padding-bottom: 0.3rem;
+	border-bottom: 1px solid var(--divider);
+}
+
+.prose h3 {
+	margin-top: 2rem;
+	margin-bottom: 0.6rem;
+	font-size: var(--type-title-l);
+}
+
+.prose img,
+.prose svg.figure {
+	max-width: 100%;
+	border-radius: var(--radius-card);
+}
+
+.prose blockquote {
+	margin: 1.5rem 0;
+	padding: 0.4rem 1.1rem;
+	border-left: 2px solid var(--divider);
+	color: var(--muted);
+}
+
+/* Tables are cards: a tile body, a tappable header row and divider rules,
+   in a scroll box with the card's corners. `separate` rather than
+   `collapse`, because collapsed borders ignore border-radius. */
+.prose table {
+	border-collapse: separate;
+	border-spacing: 0;
+	font-size: var(--type-body);
+	font-variant-numeric: tabular-nums;
+	background: var(--tile);
+	border: 1px solid var(--divider);
+	border-radius: var(--radius-card);
+	/* `display: block` lets a wide table scroll within its own box, never the
+	   whole page. A block would otherwise stretch to the full column while the
+	   rows stay their natural width, leaving the card running on past the last
+	   column; `fit-content` makes the box hug the rows, up to the column. */
+	display: block;
+	width: fit-content;
+	max-width: min(100%, var(--measure));
+	overflow-x: auto;
+	margin: 1.5rem 0;
+}
+.prose th,
+.prose td {
+	border-bottom: 1px solid var(--divider);
+	border-left: 1px solid var(--divider);
+	padding: 0.5rem 0.9rem;
+	text-align: left;
+	vertical-align: top;
+}
+.prose :is(th, td):first-child {
+	border-left: none;
+}
+.prose tr:last-child > td {
+	border-bottom: none;
+}
+.prose th {
+	background: var(--tappable);
+	font-weight: 700;
+}
+/* Phones: tighter cells, so a typical four-column table fits the screen
+   instead of scrolling sideways inside its card. */
+@media (max-width: 599px) {
+	.prose th,
+	.prose td {
+		padding: 0.45rem 0.55rem;
+	}
+}
+
+/* The 200ms crossfade between pages (see +layout.svelte). The browser
+   supplies the fade; only its length is set here. */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 200ms;
+}
+
+/* respect readers who prefer minimal motion — every animation keys off this */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}
