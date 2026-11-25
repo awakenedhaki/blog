@@ -29,6 +29,10 @@ const config = {
 		}),
 
 		prerender: {
+			// Pages no other page links to, so the crawl from / never finds them:
+			// the app privacy policies Google Play links to.
+			entries: ['*', '/apps/sudoku/privacy/'],
+
 			// Post, tag and series pages exist only once a post (or a series in
 			// src/lib/site.js) does, so on an empty blog these routes legitimately
 			// render nothing. Any other route that goes unseen is still an error.
